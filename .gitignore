@@ -1,0 +1,6 @@
+node_modules/
+*/node_modules/
+sambashare/
+client/build/
+server/certificate/
+server/.env
