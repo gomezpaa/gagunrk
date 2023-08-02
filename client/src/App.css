@@ -1,0 +1,50 @@
+.home-heading, 
+.about-heading {
+    text-align: center;
+}
+
+.page-btn {
+    display: flex;
+    justify-content: center;
+    margin-top: 30px;
+}
+
+.page-btn button{
+    padding: 10px 20px;
+    margin: 0 5px;
+    background-color: #007bff;
+    color: #fff;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.page-btn button:hover {
+    background-color: #0056b3;
+}
+
+.page-btn button:disabled {
+    background-color: #d9d9d9;
+    cursor: not-allowed;
+}
+
+.pageCount {
+    padding-left: 15px;
+    padding-right: 15px;
+}
+
+.home-text {
+    padding: 15px;
+    font-size: 18px;
+}
+
+/* CSS for about page */
+.proposal,
+.report-log {
+  padding: 20px 40px;
+}
+
+.proposal-text,
+.report-log-text {
+  font-size: 20px;
+}

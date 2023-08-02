@@ -1,0 +1,43 @@
+.card-container {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 20px;
+    padding: 10px;
+}
+
+.card {
+    background-color: #f9f9f9;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    padding: 10px;
+    width: 300px;
+    height: 275px;
+}
+
+.card-title {
+    text-align: center;
+    font-size: 18px;
+    font-weight: bold;
+    margin-bottom: 5px;
+}
+
+.card-description {
+    font-size: 14px;
+    margin-bottom: 5px;
+    
+}
+
+.card-pubDate {
+    text-align: center;
+    font-size: 12px;
+    color: #888;
+    margin-bottom: 5px;
+}
+
+.card-link {
+    text-align: center;
+    font-size: 14px;
+    color: #007bff;
+    text-decoration: none;
+}
