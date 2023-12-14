@@ -1,0 +1,28 @@
+version: '3.8'
+
+services:
+
+  gagunrk-client:
+    image: gagunrk-client
+    ports:
+      - "3000:3000"
+    depends_on:
+      - gagunrk-server
+
+  gagunrk-server:
+    image: gagunrk-server
+    ports:
+      - "5000:5000"
+    environment:
+      - DB_HOST=gagunrk-mysql
+      - DB_USERNAME="${DB_USERNAME}"
+      - DB_PASSWORD="${DB_PASSWORD}"
+    network_mode: "host"
+
+  gagunrk-mysql:
+    image: mysql:latest
+    environment:
+      - MYSQL_ALLOW_EMPTY_PASSWORD=true
+      - MYSQL_DATABASE=test
+    ports:
+      - "3307:3306"

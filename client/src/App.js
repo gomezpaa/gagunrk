@@ -4,7 +4,7 @@ import { toast } from "react-toastify";
 import Navbar from "./components/Navbar";
 import Home from "./pages/Home";
 import About from "./pages/About";
-import Snippets from "./pages/News";
+import NYTPage from "./pages/NYTPage";
 import RegisterModal from "./components/RegisterModal";
 import LoginModal from "./components/LoginModal";
 import "./App.css"
@@ -69,7 +69,7 @@ function App() {
 		<Routes>
 		    <Route path="/" element={<Home />} />
 		    <Route path="/about" element={<About />} />
-		    <Route path="/news" element={<Snippets />} />
+		    <Route path="/nyt" element={<NYTPage />} />
 		</Routes>
 	    </Router>
 	    

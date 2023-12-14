@@ -6,6 +6,7 @@ function Home() {
 	    <h2>Services available:</h2>
 	    <ol className="home-list">
 		<li>Article snippets from the NYT</li>
+		<li>Full articles from NYT's U.S. section</li>
 	    </ol>
 	</div>
     );

@@ -1,7 +1,11 @@
 const express = require('express');
+const { spawn } = require('child_process');
+const rss = require('rss');
 const cors = require('cors');
 const mysql = require('mysql2');
 const bcrypt = require('bcrypt');
+const { error } = require('console');
+const { stdout, stderr } = require('process');
 
 const app = express();
 app.use(express.json());
@@ -10,11 +14,12 @@ require('dotenv').config();
 
 const dbUsername = process.env.DB_USERNAME;
 const dbPassword = process.env.DB_PASSWORD;
+console.log(dbUsername, dbPassword);
 const saltRounds = 10;
 
 // Create a MySQL connection
 const pool = mysql.createPool({
-    host: '127.0.0.1',
+    host: 'localhost',
     port: 3306,
     user: dbUsername,
     password: dbPassword,
@@ -25,7 +30,7 @@ const pool = mysql.createPool({
 });
 
 const userPool = mysql.createPool({
-    host: '127.0.0.1',
+    host: 'localhost',
     port: 3306,
     user: dbUsername,
     password: dbPassword,
@@ -43,6 +48,40 @@ pool.getConnection((err, connection) => {
 	});
 });
 
+app.get('/api/rss/articles', async (req, res) => {
+    const { page, pageSize } = req.query;
+    const pageNumber = parseInt(page);
+    const pageSizeNumber = parseInt(pageSize);
+    const offset = (pageNumber - 1) * pageSizeNumber;
+    
+    try {
+	const query = 'SELECT * FROM nyt_us ORDER BY id DESC LIMIT ?, ?';
+	const results = await pool.promise().query(query, [offset, pageSizeNumber]);
+
+	const feed= new rss({
+	    title: "Gagunrk RSS Feed",
+	    description: "A sample RSS feed for testing!",
+	    feed_url: "https://www.gagunrk.com/api/rss/articles"
+	});
+
+	results.forEach((row) => {
+	    feed.item({
+		title: row.title,
+		description: row.description,
+		url: row.url,
+		date: row.date,
+	    });
+	});
+
+	res.set('Content-Type', 'application/rss+xml');
+	res.send(feed.xml());
+
+    } catch (error) {
+	console.error('Error executing the query: ', error);
+	res.status(500).json({ error: 'Error executing the query' });
+    }
+});
+
 app.get('/api/test/articles', async (req, res) => {
     try {
 	const { page, pageSize } = req.query;
@@ -58,6 +97,7 @@ app.get('/api/test/articles', async (req, res) => {
     }
 });
 
+
 app.get('/api/nytToday/articles', async (req, res) => {
     try {
 	const { page, pageSize } = req.query;
@@ -71,6 +111,50 @@ app.get('/api/nytToday/articles', async (req, res) => {
 	console.error('Error executing the query: ', error);
 	res.status(500).json({ error: 'Error executing the query' });
     }
+});
+
+app.get('/api/nytHomePage/articles', async (req, res) => {
+    try {
+	const { page, pageSize } = req.query;
+	const pageNumber = parseInt(page);
+	const pageSizeNumber = parseInt(pageSize);
+	const offset = (pageNumber - 1) * pageSizeNumber;
+	const query = 'SELECT * FROM nytHome_US ORDER BY id DESC LIMIT ?, ?';  
+	const results = await pool.promise().query(query, [offset, pageSizeNumber]);
+	res.json(results[0]);
+    } catch (error) {
+	console.error('Error executing the query: ', error);
+	res.status(500).json({ error: 'Error executing the query' });
+    }
+});
+
+app.get('/api/scrapeScript', async(req, res) => {
+    const articleLink = req.query.articleLink;
+    const path = '/home/gomezpa/gagunrk/scripts/nytScraper.py'
+    const pythonEnv = '/home/gomezpa/Capstone/bin/python'
+
+    function runScraper(scriptPath, arg) {
+	const pyProgram = spawn(pythonEnv, [scriptPath].concat('-l', arg));
+	let data = '';
+
+	pyProgram.stdout.on('data', (stdout) => {
+	    data += stdout.toString();
+	});
+
+	pyProgram.stderr.on('data', (stderr) => {
+	    console.log(`stderr: ${stderr}`);
+	    console.log(data);
+	});
+
+	pyProgram.on('close', (code) => {
+	    console.log(`Child process exited with code: ${code}`);
+	    const dataArray = data.split('\n').filter(Boolean)
+	    console.log(dataArray);
+	    res.send(dataArray);
+	});
+    }
+
+    results = runScraper(path, articleLink);
 });
 
 app.post('/api/register', async (req, res) => {
